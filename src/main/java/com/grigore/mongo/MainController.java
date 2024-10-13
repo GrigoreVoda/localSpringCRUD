@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -65,9 +65,6 @@ public class MainController {
             @RequestParam("firstName") String firstName, @RequestParam ("lastName") java.lang.String lastName){
          boolean isMacth = personService.findPersonByFirstNameAndLastName(firstName,lastName);
          return new ResponseEntity<Boolean>(isMacth,HttpStatus.OK);
-       // if(isMacth) { return new ResponseEntity<>(HttpStatus.FOUND);}
-        //else
-        //{return new ResponseEntity<>(HttpStatus.OK);}
     }
     @CrossOrigin
     @GetMapping("person/search/{text}")
@@ -135,6 +132,14 @@ public class MainController {
         Eveniment newEveniment = eventService.updateEveniment(eveniment);
         return new ResponseEntity<>(eveniment, HttpStatus.OK);
     }
+
+    @CrossOrigin
+    @GetMapping("/events/byMonth/{month}")
+    public ResponseEntity<List<Eveniment>> getEventByMonth(@PathVariable("month") Integer month){
+        List<Eveniment> eventsByMonth =eventService.searchByMonth(month);
+        return new ResponseEntity<>(eventsByMonth, HttpStatus.OK);
+    }
+
     @CrossOrigin
     @GetMapping("/docs/delete/{id}")
     public void deleteDoc (@PathVariable("id") String id ){
@@ -171,6 +176,12 @@ public class MainController {
     @DeleteMapping("/events/{eventId}")
     public ResponseEntity<Void> removeEvent(@PathVariable("eventId") String stringId) {
         eventService.removeEvent(stringId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @CrossOrigin
+    @DeleteMapping("/person/{personId}")
+    public ResponseEntity<Void> removePerson(@PathVariable("personId") String stringId) {
+        personService.removePerson(stringId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

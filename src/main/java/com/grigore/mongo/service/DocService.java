@@ -6,6 +6,7 @@ import com.grigore.mongo.repository.DocsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -18,6 +19,7 @@ public class DocService {
         this.docsRepository = docsRepository;
     }
     public List<Doc> findAllDocs(){
+
         List<Doc> allDocs = docsRepository.findAll();
         List<Doc> allDocsSorted = allDocs.stream().sorted((
                 (o1, o2) -> o1.getExpireDate().compareTo(o2.getExpireDate()))).toList();

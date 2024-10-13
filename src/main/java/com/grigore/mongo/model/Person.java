@@ -38,6 +38,7 @@ public class Person {
 
    //@DBRef(lazy = false)
     private List<String> eventsID;
+    private List<Relative> relatives;
 
 
     public Person(){}
@@ -57,7 +58,8 @@ public class Person {
                   String comments,
                   Integer age,
                   String zodiac,
-                  List<String> eventsID) {
+                  List<String> eventsID,
+                  List<Relative> relatives) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -74,6 +76,7 @@ public class Person {
         this.age = age;
         this.zodiac = zodiac;
         this.eventsID = eventsID;
+        this.relatives = relatives;
     }
 
     public Integer getAge() {
@@ -231,14 +234,82 @@ public class Person {
         this.eventsID = eventsID;
     }
 
+    public List<Relative> getRelatives() {
+        return relatives;
+    }
+
+    public void setRelatives(List<Relative> relatives) {
+        this.relatives = relatives;
+    }
+
     @Override
     public String toString() {
-        return "Person{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", gender=" + gender +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Person Details:\n");
+        sb.append("----------------------------\n");
+        sb.append("ID: ").append(id).append("\n");
+        sb.append("First Name: ").append(firstName).append("\n");
+        sb.append("Last Name: ").append(lastName).append("\n");
+        sb.append("Maiden Name: ").append(maidenName != null ? maidenName : "N/A").append("\n");
+        sb.append("Date of Birth: ").append(dateOfBirth != null ? dateOfBirth : "N/A").append("\n");
+        sb.append("Date of Death: ").append(dateOfDeath != null ? dateOfDeath : "N/A").append("\n");
+        sb.append("Is Alive: ").append(isAlive != null ? isAlive : "N/A").append("\n");
+        sb.append("Age: ").append(age != null ? age : "N/A").append("\n");
+        sb.append("Zodiac Sign: ").append(zodiac != null ? zodiac : "N/A").append("\n");
+        sb.append("Gender: ").append(gender != null ? gender : "N/A").append("\n");
+
+        sb.append("Phones: ");
+        if (phone != null && !phone.isEmpty()) {
+            sb.append(String.join(", ", phone));
+        } else {
+            sb.append("N/A");
+        }
+        sb.append("\n");
+
+        sb.append("Email: ").append(email != null ? email : "N/A").append("\n");
+
+        sb.append("Addresses: ");
+        if (address != null && !address.isEmpty()) {
+            for (Address addr : address) {
+                sb.append("\n  - ").append(addr.toString());
+            }
+        } else {
+            sb.append("N/A");
+        }
+        sb.append("\n");
+
+        sb.append("Cars: ");
+        if (carsList != null && !carsList.isEmpty()) {
+            for (Cars car : carsList) {
+                sb.append("\n  - ").append(car.toString());
+            }
+        } else {
+            sb.append("N/A");
+        }
+        sb.append("\n");
+
+        sb.append("Comments: ").append(comments != null ? comments : "N/A").append("\n");
+
+        sb.append("Events ID: ");
+        if (eventsID != null && !eventsID.isEmpty()) {
+            sb.append(String.join(", ", eventsID));
+        } else {
+            sb.append("N/A");
+        }
+        sb.append("\n");
+
+        sb.append("Relatives: ");
+        if (relatives != null && !relatives.isEmpty()) {
+            for (Relative relative : relatives) {
+                sb.append("\n  - ").append(relative.toString());
+            }
+        } else {
+            sb.append("N/A");
+        }
+        sb.append("\n");
+        sb.append("----------------------------\n");
+
+        return sb.toString();
     }
 
    public void addEvent(String savedString) {this.getEventsID().add(savedString);}

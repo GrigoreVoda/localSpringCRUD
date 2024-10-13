@@ -80,4 +80,19 @@ public class Eveniment {
     public void setPersonsId(List<String> personsId) {
         this.personsId = personsId;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Eveniment Details:\n");
+        sb.append("----------------------------\n");
+        sb.append("ID: ").append(id != null ? id : "N/A").append("\n");
+        sb.append("Event Name: ").append(eventName != null ? eventName : "N/A").append("\n");
+        sb.append("Event Date: ").append(eventDate != null ? eventDate : "N/A").append("\n");
+        sb.append("Description: ").append(description != null ? description : "N/A").append("\n");
+        sb.append("Age: ").append(getAge() != null ? getAge() + " years" : "N/A").append("\n");
+        sb.append("Persons IDs: ").append(personsId != null && !personsId.isEmpty() ? String.join(", ", personsId) : "None").append("\n");
+        sb.append("----------------------------\n");
+        return sb.toString();
+    }
 }

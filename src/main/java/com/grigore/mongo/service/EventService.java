@@ -5,17 +5,17 @@ import com.grigore.mongo.model.Eveniment;
 
 import com.grigore.mongo.model.Person;
 import com.grigore.mongo.repository.EventsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.time.Month;
+import java.util.*;
 
 
 @Service
 public class EventService {
+    private static final Logger logger = LoggerFactory.getLogger(EventService.class);
     private final EventsRepository eventsRepository;
     private final PersonService personService;
 
@@ -28,18 +28,23 @@ public class EventService {
         return (collection == null || collection.isEmpty());
     }
     public List<Eveniment> findAllEvents() {
+        logger.info("Finding all events");
         return eventsRepository.findAll();
     }
 
     public Eveniment findEvenimentById(String eventId) {
+        //logger.info("Searching for event by ID " + eventId);
 
-        return eventsRepository.findEvenimentById(eventId).orElseThrow(
+        Eveniment eveniment= eventsRepository.findEvenimentById(eventId).orElseThrow(
                 ()-> new UserNotFoundException("Entity by id " + eventId + " not found"));
+        logger.info("Eveniment showed: " + eventId + " " + eveniment.getEventName());
+        return eveniment;
     }
 
     public Eveniment addEvent(Eveniment eveniment) {
         // Save the event
         Eveniment savedEveniment = eventsRepository.save(eveniment);
+        logger.info("Eveniment saved" + eveniment.getEventName());
         addEventAtPerson(eveniment.getPersonsId(),eveniment);
 
 
@@ -56,22 +61,22 @@ public class EventService {
         }
 
    //adding eventId (updating persons eveniment array)at the persons that are mentionated in this eveniment.persons
-    private void addEventAtPerson(List<String> personsId, Eveniment eveniment) {//Eveniment eveniment{
-        if(isEmptyOrNull(personsId)) {  }
-         else {
+    public void addEventAtPerson(List<String> personsId, Eveniment eveniment) {
+        if(isEmptyOrNull(personsId)) { return; }
+        // else {
              for (String person : personsId) {
                  Person existingPerson = personService.findPersonById(person);
                  if (existingPerson == null) {throw new IllegalArgumentException("Person with ID " + person + " does not exist.");}
-                     if (existingPerson.getEventsID() == null) {
+                 if (existingPerson.getEventsID() == null) {
                          existingPerson.setEventsID(new ArrayList<>());
                          existingPerson.getEventsID().add(eveniment.getId());
                          personService.updatePerson(existingPerson);
                      } else {
-                         existingPerson.addEvent(eveniment.getId()); // Assuming you have an addEvent method in the Person class}
+                         existingPerson.addEvent(eveniment.getId()); // Assuming you have an addEvent method in the Person class
 
                          personService.updatePerson(existingPerson);
                      }
-                 }
+                 //}
              }
     }
                                                 //personsId
@@ -79,7 +84,7 @@ public void removeEventsFromPerson(List<String> listOfPersonsIdToRemoveThisEvent
         for(String personId: listOfPersonsIdToRemoveThisEvent){
            Person personToUpdate = personService.findPersonById(personId);
 
-            if (personToUpdate == null) {throw new IllegalArgumentException("PersonID " + personToUpdate.getId() + " does not exist.");}
+            if (personToUpdate == null) {throw new IllegalArgumentException("PersonID  does not exist.");}
             List<String> eventsID = personToUpdate.getEventsID();
             if(eventsID != null && eventsID.contains(eventId)){
                 personToUpdate.getEventsID().remove(eventId);
@@ -99,6 +104,7 @@ public void removeEventsFromPerson(List<String> listOfPersonsIdToRemoveThisEvent
 
     public Eveniment updateEveniment(Eveniment eveniment) {
         List<String> originalPersonsId = new ArrayList<>();
+        logger.info("Eveniment before update" + findEvenimentById(eveniment.getId()));
         Optional<Eveniment> optionalEveniment = eventsRepository.findEvenimentById(eveniment.getId()); //PersonId[] from DB
         List<String> newPersonsId =eveniment.getPersonsId(); //PersonId[] from updated obj
         if (optionalEveniment.isPresent()) {
@@ -140,48 +146,16 @@ public void removeEventsFromPerson(List<String> listOfPersonsIdToRemoveThisEvent
             System.out.println("New Elements: " + newElements);
             System.out.println("Removed Elements: " + removedElements);
         }
-
-
-
-       /* if (originalPersonsId==null||originalPersonsId.isEmpty()){
-            if(!newPersonsId.isEmpty()){
-                for (String newPerson: newPersonsId) {
-                    addEventAtPerson(findEvenimentById(eveniment.getId()));
-                }
-
-            }
-        }*/
-
-
-
-
-        /*    // Create a copy of originalPersonsId to avoid modifying the original list
-            List<String> originalCopy = new ArrayList<>(originalPersonsId); //copy of PersonId[] from DB
-
-            // Use removeAll to remove elements that exist in both lists, leaving only new elements in originalCopy
-            originalCopy.removeAll(newPersonsId);
-
-            if (!originalCopy.isEmpty()) {
-                for (String newEventId: originalCopy) {
-                    addEventAtPerson(findEvenimentById(newEventId));
-                }
-            } else {
-                System.out.println("There are no new elements in newPersonsId");
-            }
-
-            // The removedPersons list will contain the elements that will be removed from originalPersonsId.
-            List<String> removedPersons = new ArrayList<>();
-
-            for (String personId : originalPersonsId) {
-                if (!newPersonsId.contains(personId)) {removedPersons.add(personId);}
-            }
-            //removes this eveniment at Person that was removed at update
-            if(!removedPersons.isEmpty()){
-                removeEventsFromPerson(removedPersons, eveniment.getId());
-            }*/
-
-
+        logger.info("Eveniment after update: " + eveniment);
         return eventsRepository.save(eveniment);
+    }
+
+    public List<Eveniment> searchByMonth(Integer month) {
+        List<Eveniment> newList = eventsRepository.findAll().stream().
+                filter(eveniment -> {return eveniment.getEventDate().getMonth().equals(Month.of(month));}).
+                sorted(Comparator.comparingInt(o -> o.getEventDate().getDayOfMonth())).toList();
+        logger.info("Searched events for month: " + month);
+        return newList;
     }
 }
 
