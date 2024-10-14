@@ -2,10 +2,13 @@ package com.grigore.mongo.model;
 
 import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 
 @Document(collection = "items")
 public class Item {
@@ -15,9 +18,11 @@ public class Item {
     private String description;
     @DBRef
     private Place place; // reference to Location
-    private Date expireDate; // optional
+    private LocalDate expireDate; // optional
     private String barcode; // optional for barcode
     private Binary photo; // optional for storing a photo of the item
+    @Transient
+    private int daysUntilExpire;
 
     public Item() {
     }
@@ -62,11 +67,11 @@ public class Item {
         this.place = place;
     }
 
-    public Date getExpireDate() {
+    public LocalDate getExpireDate() {
         return expireDate;
     }
 
-    public void setExpireDate(Date expireDate) {
+    public void setExpireDate(LocalDate expireDate) {
         this.expireDate = expireDate;
     }
 
@@ -84,5 +89,13 @@ public class Item {
 
     public void setPhoto(Binary photo) {
         this.photo = photo;
+    }
+
+    public int getDaysUntilExpire() {
+        if(expireDate==null)
+        {return 0;}
+        else {
+            return (int) ChronoUnit.DAYS.between(LocalDate.now(), expireDate);
+        }
     }
 }

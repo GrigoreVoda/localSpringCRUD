@@ -79,20 +79,20 @@ public class HomeManagementController {
     public void deleteItem(@PathVariable String id) {
         homeManagementService.deleteItem(id);
     }
-    @PutMapping("/locations/{id}")
-    public Location updateLocation(@PathVariable String id, @RequestBody Location location) {
-        return homeManagementService.updateLocation(id, location);
+    @PutMapping("/locations")
+    public Location updateLocation( @RequestBody Location location) {
+        return homeManagementService.updateLocation(location);
     }
 
     // Place-related update endpoint
-    @PutMapping("/places/{id}")
-    public Place updatePlace(@PathVariable String id, @RequestBody Place place) {
-        return homeManagementService.updatePlace(id, place);
+    @PutMapping("/places")
+    public Place updatePlace( @RequestBody Place place) {
+        return homeManagementService.updatePlace( place);
     }
 
     // Item-related update endpoint
-    @PutMapping("/items/{id}")
-    public Item updateItem(@PathVariable String id, @RequestBody Item item) {
-        return homeManagementService.updateItem(id, item);
+    @PutMapping("/items")
+    public Item updateItem( @RequestBody Item item) {
+        return homeManagementService.updateItem( item);
     }
 }

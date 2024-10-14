@@ -9,6 +9,7 @@ import com.grigore.mongo.repository.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -58,7 +59,13 @@ public class HomeManagementService {
 
     // Item Methods
     public List<Item> getAllItems() {
-        return itemRepository.findAll();
+
+        return itemRepository.findAll().stream().
+                sorted(Comparator.comparing(Item::getExpireDate, Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+
+                //.stream().
+              //  sorted((o1,o2) ->o1.getExpireDate().compareTo(o2.getExpireDate())).toList();
     }
 
     public Item saveItem(Item item) {
@@ -73,37 +80,15 @@ public class HomeManagementService {
         itemRepository.deleteById(id);
     }
 
-    public Location updateLocation(String id, Location updatedLocation) {
-        return locationRepository.findById(id)
-                .map(location -> {
-                    // Update fields as necessary
-                    location.setName(updatedLocation.getName());
-                    location.setDescription(updatedLocation.getDescription());
-                    // Add other fields as needed
-                    return locationRepository.save(location);
-                })
-                .orElse(null); // Return null if location not found
+    public Location updateLocation(Location updatedLocation) {
+        return locationRepository.save(updatedLocation);
     }
-    public Place updatePlace(String id, Place updatedPlace) {
-        return placeRepository.findById(id)
-                .map(place -> {
-                    // Update fields as necessary
-                    place.setPlaceName(updatedPlace.getPlaceName());
-                    place.setDescription(updatedPlace.getDescription());
-                    // Add other fields as needed
-                    return placeRepository.save(place);
-                })
-                .orElse(null); // Return null if place not found
+    public Place updatePlace( Place updatedPlace) {
+        return placeRepository.save(updatedPlace);
+
     }
-    public Item updateItem(String id, Item updatedItem) {
-        return itemRepository.findById(id)
-                .map(item -> {
-                    // Update fields as necessary
-                    item.setItemName(updatedItem.getItemName());
-                    item.setDescription(updatedItem.getDescription());
-                    // Add other fields as needed
-                    return itemRepository.save(item);
-                })
-                .orElse(null); // Return null if item not found
+    public Item updateItem( Item item) {
+     itemRepository.save(item);
+        return item;
     }
 }
