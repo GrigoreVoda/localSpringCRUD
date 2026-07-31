@@ -1,6 +1,8 @@
 package com.grigore.mongo.model;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +15,9 @@ import java.util.List;
 public class Eveniment {
     @Id
     private String id;
+    @NotBlank(message = "Event name is required")
     private String eventName;
+    @NotNull(message = "Event date is required")
     private LocalDate eventDate;
     private String description;
     @Transient

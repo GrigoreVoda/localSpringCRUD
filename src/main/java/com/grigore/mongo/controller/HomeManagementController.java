@@ -4,7 +4,7 @@ import com.grigore.mongo.model.Item;
 import com.grigore.mongo.model.Location;
 import com.grigore.mongo.model.Place;
 import com.grigore.mongo.service.HomeManagementService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +13,11 @@ import java.util.List;
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class HomeManagementController {
-    @Autowired
-    private HomeManagementService homeManagementService;
+    private final HomeManagementService homeManagementService;
+
+    public HomeManagementController(HomeManagementService homeManagementService) {
+        this.homeManagementService = homeManagementService;
+    }
 
 
     // Location-related endpoints
@@ -29,7 +32,7 @@ public class HomeManagementController {
     }
 
     @PostMapping("/locations")
-    public Location createLocation(@RequestBody Location location) {
+    public Location createLocation(@Valid @RequestBody Location location) {
         return homeManagementService.saveLocation(location);
     }
 
@@ -50,7 +53,7 @@ public class HomeManagementController {
     }
 
     @PostMapping("/places")
-    public Place createPlace(@RequestBody Place place) {
+    public Place createPlace(@Valid @RequestBody Place place) {
         return homeManagementService.savePlace(place);
     }
 
@@ -71,7 +74,7 @@ public class HomeManagementController {
     }
 
     @PostMapping("/items")
-    public Item createItem(@RequestBody Item item) {
+    public Item createItem(@Valid @RequestBody Item item) {
         return homeManagementService.saveItem(item);
     }
 
@@ -80,19 +83,19 @@ public class HomeManagementController {
         homeManagementService.deleteItem(id);
     }
     @PutMapping("/locations")
-    public Location updateLocation( @RequestBody Location location) {
+    public Location updateLocation(@Valid @RequestBody Location location) {
         return homeManagementService.updateLocation(location);
     }
 
     // Place-related update endpoint
     @PutMapping("/places")
-    public Place updatePlace( @RequestBody Place place) {
+    public Place updatePlace(@Valid @RequestBody Place place) {
         return homeManagementService.updatePlace( place);
     }
 
     // Item-related update endpoint
     @PutMapping("/items")
-    public Item updateItem( @RequestBody Item item) {
+    public Item updateItem(@Valid @RequestBody Item item) {
         return homeManagementService.updateItem( item);
     }
 }

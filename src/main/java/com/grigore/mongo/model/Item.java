@@ -1,5 +1,6 @@
 package com.grigore.mongo.model;
 
+import jakarta.validation.constraints.NotBlank;
 import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -14,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 public class Item {
     @Id
     private String id;
+    @NotBlank(message = "Item name is required")
     private String itemName;
     private String description;
     @DBRef

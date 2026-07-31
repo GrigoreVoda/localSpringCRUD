@@ -1,5 +1,6 @@
 package com.grigore.mongo.model;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,6 +10,7 @@ import java.util.List;
 public class Company {
     @Id
     private String id;
+    @NotBlank(message = "Company name is required")
     private String name;
     private String street;
     private String streetNumber;

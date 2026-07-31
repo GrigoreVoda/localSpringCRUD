@@ -3,19 +3,15 @@ package com.grigore.mongo.service;
 import com.grigore.mongo.exception.UserNotFoundException;
 import com.grigore.mongo.model.Doc;
 import com.grigore.mongo.repository.DocsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
 public class DocService {
     private final DocsRepository docsRepository;
 
-    @Autowired
     public DocService(DocsRepository docsRepository){
-
         this.docsRepository = docsRepository;
     }
     public List<Doc> findAllDocs(){
@@ -32,13 +28,8 @@ public class DocService {
         );
     }
     public Doc addDoc(Doc doc){
-        if(doc.getExpireDate()!=null){
-            docsRepository.save(doc);
-            return doc;
-        }else {
-            throw new IllegalArgumentException("Expire date field is null");
-        }
-
+        docsRepository.save(doc);
+        return doc;
     }
     public Doc updateDoc(Doc doc){
         docsRepository.save(doc);

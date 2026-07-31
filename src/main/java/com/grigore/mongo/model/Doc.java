@@ -1,5 +1,7 @@
 package com.grigore.mongo.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,8 +13,11 @@ import java.time.temporal.ChronoUnit;
 public class Doc {
     @Id
     private String id;
+    @NotBlank(message = "Document type is required")
     private String docType;
+    @NotBlank(message = "Document number is required")
     private String docNumber;
+    @NotNull(message = "Expire date is required")
     private LocalDate expireDate;
     @Transient
     private int daysUntilExpire;

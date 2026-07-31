@@ -1,17 +1,16 @@
 package com.grigore.mongo.service;
 
+import com.grigore.mongo.exception.UserNotFoundException;
 import com.grigore.mongo.model.Company;
 import com.grigore.mongo.repository.CompanyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
-@Service
 
+@Service
 public class CompanyService {
     private final CompanyRepository companyRepository;
-    @Autowired
+
     public CompanyService(CompanyRepository companyRepository){
         this.companyRepository=companyRepository;
     }
@@ -26,7 +25,7 @@ public class CompanyService {
 
     public Company findCompanyById(String id) {
         return companyRepository.findCompanyById(id).orElseThrow(
-                ()-> new RuntimeException("Company not found"));
+                ()-> new UserNotFoundException("Company by id " + id + " not found"));
     }
 
     public Company updateCompany(Company company) {

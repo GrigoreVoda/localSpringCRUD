@@ -1,12 +1,12 @@
 package com.grigore.mongo.service;
 
+import com.grigore.mongo.exception.UserNotFoundException;
 import com.grigore.mongo.model.Item;
 import com.grigore.mongo.model.Location;
 import com.grigore.mongo.model.Place;
 import com.grigore.mongo.repository.ItemRepository;
 import com.grigore.mongo.repository.LocationRepository;
 import com.grigore.mongo.repository.PlaceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -14,14 +14,15 @@ import java.util.List;
 
 @Service
 public class HomeManagementService {
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
+    private final PlaceRepository placeRepository;
+    private final ItemRepository itemRepository;
 
-    @Autowired
-    private PlaceRepository placeRepository;
-
-    @Autowired
-    private ItemRepository itemRepository;
+    public HomeManagementService(LocationRepository locationRepository, PlaceRepository placeRepository, ItemRepository itemRepository) {
+        this.locationRepository = locationRepository;
+        this.placeRepository = placeRepository;
+        this.itemRepository = itemRepository;
+    }
 
     // Location Methods
     public List<Location> getAllLocations() {
@@ -33,7 +34,8 @@ public class HomeManagementService {
     }
 
     public Location getLocationById(String id) {
-        return locationRepository.findById(id).orElse(null);
+        return locationRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("Location by id " + id + " not found"));
     }
 
     public void deleteLocation(String id) {
@@ -50,7 +52,8 @@ public class HomeManagementService {
     }
 
     public Place getPlaceById(String id) {
-        return placeRepository.findById(id).orElse(null);
+        return placeRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("Place by id " + id + " not found"));
     }
 
     public void deletePlace(String id) {
@@ -73,7 +76,8 @@ public class HomeManagementService {
     }
 
     public Item getItemById(String id) {
-        return itemRepository.findById(id).orElse(null);
+        return itemRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("Item by id " + id + " not found"));
     }
 
     public void deleteItem(String id) {

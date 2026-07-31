@@ -1,6 +1,9 @@
 package com.grigore.mongo.model;
 
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,17 +19,22 @@ public class Person {
     @Id
     private String id;
 
+    @NotBlank(message = "First name is required")
     private String firstName;
 
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     private String maidenName;
+    @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
     private LocalDate dateOfDeath;
     private Boolean isAlive;
 
     private List<String> phone;
+    @Email(message = "Email must be a valid address")
     private String email;
+    @NotNull(message = "Gender is required")
     private Gender gender;
     private List<Address> address;
     private List<Cars> carsList;

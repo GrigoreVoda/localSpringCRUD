@@ -40,17 +40,9 @@ public class ProjectConfig implements WebMvcConfigurer {
         http
                 .csrf().disable()
                 .cors(withDefaults())
-
                 .authorizeHttpRequests((authz) -> authz
-                        .anyRequest().permitAll()) //specifying authorization rules on endpoints
-                //.anyRequest() // indicates that the rule applies to all the requests,
-                              // regardless of the URL or HTTP method used
-                //.authenticated()
-                //.permitAll() //allows access to all requests, authenticated or not.
-                //.and()
-
+                        .anyRequest().permitAll())
                 .httpBasic();
-
 
         return http.build();
     }

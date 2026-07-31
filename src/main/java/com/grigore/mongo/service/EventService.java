@@ -7,7 +7,6 @@ import com.grigore.mongo.model.Person;
 import com.grigore.mongo.repository.EventsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.Month;
 import java.util.*;
@@ -19,7 +18,6 @@ public class EventService {
     private final EventsRepository eventsRepository;
     private final PersonService personService;
 
-    @Autowired
     public EventService(EventsRepository eventRepository, PersonService personService) {
         this.eventsRepository = eventRepository;
         this.personService = personService;
@@ -63,37 +61,35 @@ public class EventService {
    //adding eventId (updating persons eveniment array)at the persons that are mentionated in this eveniment.persons
     public void addEventAtPerson(List<String> personsId, Eveniment eveniment) {
         if(isEmptyOrNull(personsId)) { return; }
-        // else {
-             for (String person : personsId) {
-                 Person existingPerson = personService.findPersonById(person);
-                 if (existingPerson == null) {throw new IllegalArgumentException("Person with ID " + person + " does not exist.");}
-                 if (existingPerson.getEventsID() == null) {
-                         existingPerson.setEventsID(new ArrayList<>());
-                         existingPerson.getEventsID().add(eveniment.getId());
-                         personService.updatePerson(existingPerson);
-                     } else {
-                         existingPerson.addEvent(eveniment.getId()); // Assuming you have an addEvent method in the Person class
 
-                         personService.updatePerson(existingPerson);
-                     }
-                 //}
-             }
-    }
-                                                //personsId
-public void removeEventsFromPerson(List<String> listOfPersonsIdToRemoveThisEvent, String eventId){
-        for(String personId: listOfPersonsIdToRemoveThisEvent){
-           Person personToUpdate = personService.findPersonById(personId);
-
-            if (personToUpdate == null) {throw new IllegalArgumentException("PersonID  does not exist.");}
-            List<String> eventsID = personToUpdate.getEventsID();
-            if(eventsID != null && eventsID.contains(eventId)){
-                personToUpdate.getEventsID().remove(eventId);
-                System.out.println("Removed eventID: " + eventId + " at " + personToUpdate.getFirstName() + " " + personToUpdate.getLastName());
-            }
-
-            personService.updatePerson(personToUpdate);
+        List<Person> persons = personService.findPersonsByIds(personsId);
+        if (persons.size() != personsId.size()) {
+            throw new IllegalArgumentException("One or more persons referenced by this event do not exist.");
         }
-}
+        for (Person person : persons) {
+            if (person.getEventsID() == null) {
+                person.setEventsID(new ArrayList<>());
+            }
+            if (!person.getEventsID().contains(eveniment.getId())) {
+                person.addEvent(eveniment.getId());
+            }
+        }
+        personService.saveAll(persons);
+    }
+
+    public void removeEventsFromPerson(List<String> listOfPersonsIdToRemoveThisEvent, String eventId){
+        if (isEmptyOrNull(listOfPersonsIdToRemoveThisEvent)) { return; }
+
+        List<Person> persons = personService.findPersonsByIds(listOfPersonsIdToRemoveThisEvent);
+        for (Person person : persons) {
+            List<String> eventsID = person.getEventsID();
+            if (eventsID != null && eventsID.contains(eventId)) {
+                eventsID.remove(eventId);
+                System.out.println("Removed eventID: " + eventId + " at " + person.getFirstName() + " " + person.getLastName());
+            }
+        }
+        personService.saveAll(persons);
+    }
     public void removeEvent(String stringId) {
         Eveniment eventToDelete = findEvenimentById(stringId);
         removeEventsFromPerson(eventToDelete.getPersonsId(),eventToDelete.getId());

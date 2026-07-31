@@ -5,7 +5,6 @@ import com.grigore.mongo.model.Person;
 import com.grigore.mongo.repository.PersonsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +22,12 @@ public class PersonService {
         this.personsRepository = personsRepository;
     }
 
-    // Helper method for validation
-    private void validatePersonFields(Person person) {
-        if (person.getFirstName() == null || person.getFirstName().isEmpty() ||
-                person.getLastName() == null || person.getLastName().isEmpty() ||
-                person.getDateOfBirth() == null || person.getGender() == null) {
-            throw new IllegalArgumentException("Person fields cannot be null or empty.");
-        }
-    }
-
     public List<Person> findAllPersons() {
         logger.info("Accessed all persons data");
         return personsRepository.findAll();
     }
 
     public Person addPerson(Person person){
-        validatePersonFields(person);
         personsRepository.save(person);
         logger.info("Added person " + person.getFirstName() +" "+ person.getLastName());
         return person;
@@ -63,7 +52,6 @@ public class PersonService {
         return FirstAndLastName;
     }
     public Person updatePerson(Person person){
-        validatePersonFields(person);
         logger.info("Updating person: {}", findPersonById(person.getId()));
         personsRepository.save(person);
         logger.info("Updated person: {}", person);
@@ -106,8 +94,12 @@ public class PersonService {
         {logger.info("Deleted person with ID " +personId+ " " + getPersonFirstAndLastName(personId));
             personsRepository.deleteById(personId);}
     }
-   // public void deletePerson(String id){
-    //    logger.info("Deleted person with ID " +id+ " " + getPersonFirstAndLastName(id));
-    //    personsRepository.deleteById(id);
-   // }
+
+    public List<Person> findPersonsByIds(List<String> ids) {
+        return personsRepository.findAllById(ids);
+    }
+
+    public List<Person> saveAll(List<Person> persons) {
+        return personsRepository.saveAll(persons);
+    }
 }
