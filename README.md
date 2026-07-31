@@ -17,6 +17,8 @@ instead of silently connecting with the wrong identity:
 | `MONGO_AUTH_DATABASE` | no | `admin` | Auth database |
 | `SERVER_PORT` | no | `8080` | HTTP port |
 | `LOG_FILE` | no | `logs/springCRUD.log` | Log file path (relative, portable across OS/containers) |
+| `IMMICH_BASE_URL` | no | `http://localhost:2283` | Base URL of your Immich instance |
+| `IMMICH_API_KEY` | no | - | Immich API key (Immich: Account Settings > API Keys). Only needed if you use the Immich page - unset just makes those endpoints return a clear error instead of the app failing to start. |
 
 Example local run:
 
