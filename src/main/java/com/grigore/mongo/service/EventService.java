@@ -146,6 +146,24 @@ public class EventService {
         return eventsRepository.save(eveniment);
     }
 
+    /**
+     * Strips {@code personId} from every event's attendee list, so deleting a
+     * person doesn't leave a dangling attendee reference behind on events they
+     * used to be part of.
+     */
+    public void removePersonFromAllEvents(String personId) {
+        List<Eveniment> affected = eventsRepository.findAll().stream()
+                .filter(e -> e.getPersonsId() != null && e.getPersonsId().contains(personId))
+                .toList();
+        if (affected.isEmpty()) {
+            return;
+        }
+        for (Eveniment event : affected) {
+            event.getPersonsId().remove(personId);
+        }
+        eventsRepository.saveAll(affected);
+    }
+
     public List<Eveniment> searchByMonth(Integer month) {
         List<Eveniment> newList = eventsRepository.findAll().stream().
                 filter(eveniment -> {return eveniment.getEventDate().getMonth().equals(Month.of(month));}).

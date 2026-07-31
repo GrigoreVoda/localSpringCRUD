@@ -158,6 +158,7 @@ public class MainController {
     }
     @DeleteMapping("/person/{personId}")
     public ResponseEntity<Void> removePerson(@PathVariable("personId") String stringId) {
+        eventService.removePersonFromAllEvents(stringId);
         personService.removePerson(stringId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
