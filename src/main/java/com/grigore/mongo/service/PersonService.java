@@ -183,7 +183,9 @@ public class PersonService {
             String inverseType = RelativeTypeResolver.inverseOf(r.getRelativeType(), person.getGender());
             List<Relative> relatives = related.getRelatives() == null ? new ArrayList<>() : new ArrayList<>(related.getRelatives());
             relatives.removeIf(x -> person.getId().equals(x.getRelativePersonId()));
-            relatives.add(new Relative(person.getId(), inverseType));
+            // The origin (biological/adoptive/step) applies symmetrically to both
+            // sides of the relation, so it's carried over unchanged to the inverse.
+            relatives.add(new Relative(person.getId(), inverseType, r.getOrigin()));
             related.setRelatives(relatives);
         }
 
@@ -191,6 +193,6 @@ public class PersonService {
     }
 
     private String relativeKey(Relative r) {
-        return r.getRelativePersonId() + "::" + r.getRelativeType();
+        return r.getRelativePersonId() + "::" + r.getRelativeType() + "::" + r.getOrigin();
     }
 }

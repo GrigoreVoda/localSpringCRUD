@@ -47,6 +47,9 @@ public class Person {
    //@DBRef(lazy = false)
     private List<String> eventsID;
     private List<Relative> relatives;
+    // Excluded from normal browsing/search in the UI - e.g. contacts kept only
+    // for genealogical record-keeping. Not a security/access boundary.
+    private boolean hidden;
 
 
     public Person(){}
@@ -248,6 +251,14 @@ public class Person {
 
     public void setRelatives(List<Relative> relatives) {
         this.relatives = relatives;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     @Override

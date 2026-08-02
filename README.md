@@ -26,6 +26,13 @@ Example local run:
 MONGO_USERNAME=grigore MONGO_PASSWORD=your-password ./mvnw spring-boot:run
 ```
 
+## Profile photos
+
+Stored in their own `person_photos` collection (not on the `Person` document itself,
+so listing/searching persons never drags binary image data along). Endpoints:
+`GET/PUT/DELETE /person/{id}/photo`, `PUT` expects a multipart `file` field. Max upload
+size is 10MB (`spring.servlet.multipart.max-file-size`).
+
 ## ⚠️ Rotate your MongoDB password
 
 The MongoDB credentials used to be committed in plaintext in `application.properties`

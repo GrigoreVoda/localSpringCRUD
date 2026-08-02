@@ -3,6 +3,7 @@ package com.grigore.mongo.service;
 import com.grigore.mongo.exception.UserNotFoundException;
 import com.grigore.mongo.model.Gender;
 import com.grigore.mongo.model.Person;
+import com.grigore.mongo.model.RelationOrigin;
 import com.grigore.mongo.model.Relative;
 import com.grigore.mongo.repository.PersonsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -139,6 +140,52 @@ class PersonServiceTest {
         verify(personsRepository).saveAll(captor.capture());
         assertTrue(captor.getValue().get(0).getRelatives().isEmpty());
         verify(personsRepository).deleteById("bob");
+    }
+
+    @Test
+    void adoptiveOriginCarriesOverToTheInverseRelation() {
+        Person alice = person("alice", "Alice", Gender.FEMALE);
+        Person bob = person("bob", "Bob", Gender.MALE);
+        alice.setRelatives(List.of(new Relative("bob", "father", RelationOrigin.ADOPTIVE)));
+
+        when(personsRepository.findAllById(anyIterable())).thenReturn(List.of(bob));
+
+        personService.addPerson(alice);
+
+        ArgumentCaptor<List<Person>> captor = ArgumentCaptor.forClass(List.class);
+        verify(personsRepository).saveAll(captor.capture());
+        Relative inverse = captor.getValue().get(0).getRelatives().get(0);
+        assertEquals("daughter", inverse.getRelativeType());
+        assertEquals(RelationOrigin.ADOPTIVE, inverse.getOrigin());
+    }
+
+    @Test
+    void defaultOriginIsBiological() {
+        Relative r = new Relative("bob", "father");
+        assertEquals(RelationOrigin.BIOLOGICAL, r.getOrigin());
+    }
+
+    @Test
+    void changingOriginOnlyResyncsTheInverseEntry() {
+        Person bob = person("bob", "Bob", Gender.MALE);
+        bob.setRelatives(new ArrayList<>(List.of(new Relative("alice", "daughter", RelationOrigin.BIOLOGICAL))));
+
+        Person aliceBefore = person("alice", "Alice", Gender.FEMALE);
+        aliceBefore.setRelatives(List.of(new Relative("bob", "father", RelationOrigin.BIOLOGICAL)));
+        when(personsRepository.findPersonById("alice")).thenReturn(Optional.of(aliceBefore));
+
+        Person aliceAfter = person("alice", "Alice", Gender.FEMALE);
+        aliceAfter.setRelatives(List.of(new Relative("bob", "father", RelationOrigin.ADOPTIVE))); // corrected
+
+        when(personsRepository.findAllById(anyIterable())).thenReturn(List.of(bob));
+
+        personService.updatePerson(aliceAfter);
+
+        ArgumentCaptor<List<Person>> captor = ArgumentCaptor.forClass(List.class);
+        verify(personsRepository).saveAll(captor.capture());
+        List<Relative> bobRelatives = captor.getValue().get(0).getRelatives();
+        assertEquals(1, bobRelatives.size());
+        assertEquals(RelationOrigin.ADOPTIVE, bobRelatives.get(0).getOrigin());
     }
 
     @Test

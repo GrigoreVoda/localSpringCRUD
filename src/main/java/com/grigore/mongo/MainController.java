@@ -9,6 +9,7 @@ import com.grigore.mongo.service.CompanyService;
 
 import com.grigore.mongo.service.DocService;
 import com.grigore.mongo.service.EventService;
+import com.grigore.mongo.service.PersonPhotoService;
 import com.grigore.mongo.service.PersonService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -26,13 +27,16 @@ public class MainController {
     private final DocService docsService;
     private final CompanyService companyService;
     private final EventService eventService;
+    private final PersonPhotoService personPhotoService;
 
-    public MainController(PersonService personService, DocService docsService, CompanyService companyService, EventService eventService) {
+    public MainController(PersonService personService, DocService docsService, CompanyService companyService,
+                           EventService eventService, PersonPhotoService personPhotoService) {
 
         this.personService = personService;
         this.docsService = docsService;
         this.companyService = companyService;
         this.eventService = eventService;
+        this.personPhotoService = personPhotoService;
     }
 
     @GetMapping("/person")
@@ -159,6 +163,7 @@ public class MainController {
     @DeleteMapping("/person/{personId}")
     public ResponseEntity<Void> removePerson(@PathVariable("personId") String stringId) {
         eventService.removePersonFromAllEvents(stringId);
+        personPhotoService.deletePhoto(stringId);
         personService.removePerson(stringId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
