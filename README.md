@@ -33,6 +33,12 @@ so listing/searching persons never drags binary image data along). Endpoints:
 `GET/PUT/DELETE /person/{id}/photo`, `PUT` expects a multipart `file` field. Max upload
 size is 10MB (`spring.servlet.multipart.max-file-size`).
 
+A person can optionally be linked to an Immich person via `Person.immichPersonId`.
+This is a one-time import source, not a live link: `POST /person/{id}/photo/import-from-immich`
+fetches that Immich person's current thumbnail once and saves it into `person_photos`
+like a normal upload. After that the app has its own copy and no longer needs Immich for
+that photo - the link only matters again if you want to re-import.
+
 ## ⚠️ Rotate your MongoDB password
 
 The MongoDB credentials used to be committed in plaintext in `application.properties`

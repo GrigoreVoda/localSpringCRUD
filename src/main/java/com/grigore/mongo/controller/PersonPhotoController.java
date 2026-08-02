@@ -32,6 +32,12 @@ public class PersonPhotoController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/photo/import-from-immich")
+    public ResponseEntity<Void> importFromImmich(@PathVariable String id) {
+        personPhotoService.importFromImmich(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}/photo")
     public ResponseEntity<Void> deletePhoto(@PathVariable String id) {
         personPhotoService.deletePhoto(id);

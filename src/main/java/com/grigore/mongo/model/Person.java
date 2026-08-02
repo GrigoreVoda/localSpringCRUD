@@ -43,6 +43,10 @@ public class Person {
     private Boolean dateOfDeathMonthKnown = true;
     private Boolean dateOfDeathYearKnown = true;
     private Boolean isAlive;
+    // Optional cross-reference to an Immich person, used only to one-time
+    // import a thumbnail into local photo storage - the app never depends
+    // on Immich being reachable at runtime for this field to make sense.
+    private String immichPersonId;
 
     private List<String> phone;
     @Email(message = "Email must be a valid address")
@@ -253,6 +257,14 @@ public class Person {
 
     public void setAlive(Boolean alive) {
         isAlive = alive;
+    }
+
+    public String getImmichPersonId() {
+        return immichPersonId;
+    }
+
+    public void setImmichPersonId(String immichPersonId) {
+        this.immichPersonId = immichPersonId;
     }
 
     public List<String> getPhone() {
