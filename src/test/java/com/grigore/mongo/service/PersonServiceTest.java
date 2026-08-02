@@ -189,6 +189,23 @@ class PersonServiceTest {
     }
 
     @Test
+    void searchByMonthSkipsPersonsWithUnknownBirthDate() {
+        Person janKnown = person("jan", "Jan", Gender.MALE);
+        janKnown.setDateOfBirth(LocalDate.of(1990, 1, 15));
+        Person janUnknown = person("jan2", "JanUnknownDob", Gender.MALE);
+        janUnknown.setDateOfBirth(null);
+        Person febKnown = person("feb", "Feb", Gender.FEMALE);
+        febKnown.setDateOfBirth(LocalDate.of(1985, 2, 1));
+
+        when(personsRepository.findAll()).thenReturn(List.of(janKnown, janUnknown, febKnown));
+
+        List<Person> result = personService.searchByMonth(1);
+
+        assertEquals(1, result.size());
+        assertEquals("jan", result.get(0).getId());
+    }
+
+    @Test
     void findPersonByIdThrowsWhenMissing() {
         when(personsRepository.findPersonById("missing")).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> personService.findPersonById("missing"));

@@ -72,14 +72,11 @@ public class PersonService {
 
 
     public List<Person> searchByMonth(Integer month) {
-        //List<Person> newList= new ArrayList<>();
-        List<Person> newList = personsRepository.findAll().stream().
-         filter(person -> {
-                    return  person.getDateOfBirth().getMonth().equals(Month.of(month));}).
-                sorted(Comparator.comparingInt(o -> o.getDateOfBirth().getDayOfMonth())).toList();
+        List<Person> newList = personsRepository.findAll().stream()
+                .filter(person -> person.getDateOfBirth() != null && person.getDateOfBirth().getMonth().equals(Month.of(month)))
+                .sorted(Comparator.comparingInt(o -> o.getDateOfBirth().getDayOfMonth()))
+                .toList();
         logger.info("Searched persons for month: " + month);
-                      //(o1, o2) ->{return
-                      //(o1.getDateOfBirth().getDayOfMonth()-o2.getDateOfBirth().getDayOfMonth());}
         return newList;
     }
 

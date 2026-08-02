@@ -26,7 +26,9 @@ public class Person {
     private String lastName;
 
     private String maidenName;
-    @NotNull(message = "Date of birth is required")
+    // Deliberately optional: not everyone's exact birth date is known,
+    // especially for older relatives kept mainly for genealogical records.
+    // Age/zodiac/month-search all degrade gracefully (null/skip) when unset.
     private LocalDate dateOfBirth;
     private LocalDate dateOfDeath;
     private Boolean isAlive;
@@ -91,10 +93,16 @@ public class Person {
     }
 
     public Integer getAge() {
+        if (dateOfBirth == null) {
+            return null;
+        }
         return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     public String getZodiac() {
+        if (dateOfBirth == null) {
+            return null;
+        }
         int month = dateOfBirth.getMonthValue();
         int day = dateOfBirth.getDayOfMonth();
 
