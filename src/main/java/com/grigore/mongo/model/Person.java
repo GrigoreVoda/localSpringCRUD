@@ -31,6 +31,17 @@ public class Person {
     // Age/zodiac/month-search all degrade gracefully (null/skip) when unset.
     private LocalDate dateOfBirth;
     private LocalDate dateOfDeath;
+    // The *Known flags let a LocalDate hold a best-guess value (e.g. day 1)
+    // while marking which parts are actually unknown, so calculations that
+    // need precision (zodiac, age, birth-month search) can skip a person
+    // instead of silently trusting a guessed day/month/year. Default true so
+    // existing records without these fields are treated as fully known.
+    private Boolean dateOfBirthDayKnown = true;
+    private Boolean dateOfBirthMonthKnown = true;
+    private Boolean dateOfBirthYearKnown = true;
+    private Boolean dateOfDeathDayKnown = true;
+    private Boolean dateOfDeathMonthKnown = true;
+    private Boolean dateOfDeathYearKnown = true;
     private Boolean isAlive;
 
     private List<String> phone;
@@ -92,15 +103,22 @@ public class Person {
         this.relatives = relatives;
     }
 
+    // Old documents predating these flags have them absent, not explicitly
+    // false - treat that (and any other null) as "known" rather than
+    // silently hiding data that was always fully known.
+    private static boolean isKnown(Boolean flag) {
+        return !Boolean.FALSE.equals(flag);
+    }
+
     public Integer getAge() {
-        if (dateOfBirth == null) {
+        if (dateOfBirth == null || !isKnown(dateOfBirthYearKnown)) {
             return null;
         }
         return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     public String getZodiac() {
-        if (dateOfBirth == null) {
+        if (dateOfBirth == null || !isKnown(dateOfBirthMonthKnown) || !isKnown(dateOfBirthDayKnown)) {
             return null;
         }
         int month = dateOfBirth.getMonthValue();
@@ -179,6 +197,54 @@ public class Person {
 
     public void setDateOfDeath(LocalDate dateOfDeath) {
         this.dateOfDeath = dateOfDeath;
+    }
+
+    public Boolean getDateOfBirthDayKnown() {
+        return dateOfBirthDayKnown;
+    }
+
+    public void setDateOfBirthDayKnown(Boolean dateOfBirthDayKnown) {
+        this.dateOfBirthDayKnown = dateOfBirthDayKnown;
+    }
+
+    public Boolean getDateOfBirthMonthKnown() {
+        return dateOfBirthMonthKnown;
+    }
+
+    public void setDateOfBirthMonthKnown(Boolean dateOfBirthMonthKnown) {
+        this.dateOfBirthMonthKnown = dateOfBirthMonthKnown;
+    }
+
+    public Boolean getDateOfBirthYearKnown() {
+        return dateOfBirthYearKnown;
+    }
+
+    public void setDateOfBirthYearKnown(Boolean dateOfBirthYearKnown) {
+        this.dateOfBirthYearKnown = dateOfBirthYearKnown;
+    }
+
+    public Boolean getDateOfDeathDayKnown() {
+        return dateOfDeathDayKnown;
+    }
+
+    public void setDateOfDeathDayKnown(Boolean dateOfDeathDayKnown) {
+        this.dateOfDeathDayKnown = dateOfDeathDayKnown;
+    }
+
+    public Boolean getDateOfDeathMonthKnown() {
+        return dateOfDeathMonthKnown;
+    }
+
+    public void setDateOfDeathMonthKnown(Boolean dateOfDeathMonthKnown) {
+        this.dateOfDeathMonthKnown = dateOfDeathMonthKnown;
+    }
+
+    public Boolean getDateOfDeathYearKnown() {
+        return dateOfDeathYearKnown;
+    }
+
+    public void setDateOfDeathYearKnown(Boolean dateOfDeathYearKnown) {
+        this.dateOfDeathYearKnown = dateOfDeathYearKnown;
     }
 
     public Boolean getAlive() {

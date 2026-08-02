@@ -73,7 +73,9 @@ public class PersonService {
 
     public List<Person> searchByMonth(Integer month) {
         List<Person> newList = personsRepository.findAll().stream()
-                .filter(person -> person.getDateOfBirth() != null && person.getDateOfBirth().getMonth().equals(Month.of(month)))
+                .filter(person -> person.getDateOfBirth() != null
+                        && !Boolean.FALSE.equals(person.getDateOfBirthMonthKnown())
+                        && person.getDateOfBirth().getMonth().equals(Month.of(month)))
                 .sorted(Comparator.comparingInt(o -> o.getDateOfBirth().getDayOfMonth()))
                 .toList();
         logger.info("Searched persons for month: " + month);
