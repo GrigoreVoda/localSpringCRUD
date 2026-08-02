@@ -39,6 +39,21 @@ fetches that Immich person's current thumbnail once and saves it into `person_ph
 like a normal upload. After that the app has its own copy and no longer needs Immich for
 that photo - the link only matters again if you want to re-import.
 
+## Backups
+
+`./scripts/dump-mongo.sh [output-dir]` dumps the database both ways: native BSON via
+`mongodump` (restorable with `mongorestore`, preserves types) and per-collection JSON via
+`mongoexport` (human-readable, easy to inspect/diff). It reads the same `MONGO_*` env vars
+as the app. Requires the
+[MongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) and
+[mongosh](https://www.mongodb.com/try/download/shell) on `PATH`.
+
+```bash
+MONGO_USERNAME=grigore MONGO_PASSWORD=your-password ./scripts/dump-mongo.sh
+```
+
+Defaults to `backups/<timestamp>/` if no output directory is given.
+
 ## ⚠️ Rotate your MongoDB password
 
 The MongoDB credentials used to be committed in plaintext in `application.properties`
